@@ -87,6 +87,13 @@ CREATE TABLE CW1.Trail_TopSight(
     CONSTRAINT fk_trailTopSight_topSight FOREIGN KEY (topSight_id) REFERENCES CW1.TopSight(topSight_id)
 );
 
+CREATE TABLE CW1.Trail_Log(
+    log_id INT IDENTITY(1,1) PRIMARY KEY,
+    trail_id INT NOT NULL,
+    user_name VARCHAR(50) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT GETDATE()
+);
+
 
 /*ADDING DATA INTO TABLES*/
 INSERT INTO CW1.Users (user_id, user_name, user_email, user_password)
