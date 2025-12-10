@@ -1,0 +1,261 @@
+openapi: 3.0.0
+info:
+  title: TrailService API
+  version: "1.0.0"
+servers:
+  - url: /api
+
+paths:
+  /trails:
+    get:
+      operationId: trails.read_all
+      tags: [Trails]
+      summary: Get all trails (auth required)
+      parameters:
+        - name: owner_email
+          in: header
+          required: true
+          schema: { type: string }
+        - name: password
+          in: header
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: List of trails
+        "401":
+          description: Authentication failed
+
+    post:
+      operationId: trails.create
+      tags: [Trails]
+      summary: Create a new trail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Trail"
+      responses:
+        "201":
+          description: Trail created
+        "401":
+          description: Authentication failed
+
+  /trails/{trail_id}:
+    get:
+      operationId: trails.read_one
+      tags: [Trails]
+      summary: Get a single trail (auth required)
+      parameters:
+        - name: trail_id
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: owner_email
+          in: header
+          required: true
+          schema: { type: string }
+        - name: password
+          in: header
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Trail found
+        "404":
+          description: Trail not found
+        "401":
+          description: Authentication failed
+
+    put:
+      operationId: trails.update
+      tags: [Trails]
+      summary: Update an existing trail
+      parameters:
+        - name: trail_id
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: owner_email
+          in: header
+          required: true
+          schema: { type: string }
+        - name: password
+          in: header
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrailUpdate"
+      responses:
+        "200":
+          description: Trail updated
+        "404":
+          description: Trail not found
+        "401":
+          description: Authentication failed
+
+    delete:
+      operationId: trails.delete
+      tags: [Trails]
+      summary: Delete a trail
+      parameters:
+        - name: trail_id
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: owner_email
+          in: header
+          required: true
+          schema: { type: string }
+        - name: password
+          in: header
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Trail deleted
+        "404":
+          description: Trail not found
+        "401":
+          description: Authentication failed
+
+  /trails/my_trail: 
+    get:
+      operationId: trails.my_trails
+      tags: [Trails]
+      summary: List trails created by the authenticated ADMIN user
+      parameters:
+        - name: owner_email
+          in: header
+          required: true
+          schema: { type: string }
+        - name: password
+          in: header
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: List of trails for this user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trail'
+        '401':
+          description: Authentication failed
+
+  /trails/{trail_id}/locations:
+    put:
+      operationId: trails.add_locations
+      tags: [Trail Locations]
+      summary: Add location points to a trail (admin only)
+      parameters:
+        - name: trail_id
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: owner_email
+          in: header
+          required: true
+          schema: { type: string }
+        - name: password
+          in: header
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/TrailLocationInput"
+      responses:
+        "200":
+          description: Locations added successfully
+        "401":
+          description: Authentication failed or admin access required
+        "404":
+          description: Trail not found
+
+
+components:
+  schemas:
+    Trail:
+      type: object
+      properties:
+        Trail_Name:
+          type: string
+        Region:
+          type: string
+        Country:
+          type: string
+        City:
+          type: string
+        Difficulty:
+          type: string
+        Length_km:
+          type: number
+        Elevation_Gain_m:
+          type: integer
+        Min_Estimated_Time_hr:
+          type: number
+        Max_Estimated_Time_hr:
+          type: number
+        Trail_Type:
+          type: string
+        Description:
+          type: string
+        User_ID:
+          type: integer
+        owner_email:
+          type: string
+        password:
+          type: string
+
+    TrailUpdate:
+      type: object
+      properties:
+        Trail_Name:
+          type: string
+        Region:
+          type: string
+        Country:
+          type: string
+        City:
+          type: string
+        Difficulty:
+          type: string
+        Length_km:
+          type: number
+        Elevation_Gain_m:
+          type: integer
+        Min_Estimated_Time_hr:
+          type: number
+        Max_Estimated_Time_hr:
+          type: number
+        Trail_Type:
+          type: string
+        Description:
+          type: string
+
+    TrailLocationInput:
+      type: object
+      required:
+        - Latitude
+        - Longitude
+        - Sequence
+      properties:
+        Latitude:
+          type: number
+        Longitude:
+          type: number
+        Sequence:
+          type: integer
+
